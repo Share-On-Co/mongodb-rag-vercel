@@ -7,7 +7,7 @@ dotenv.config();
 let embeddingsInstance: OpenAIEmbeddings | null = null;
 
 const client = new MongoClient(process.env.MONGODB_URI!);
-const namespace = "chatter.training_data";
+const namespace = "share-on.test";
 const [dbName, collectionName] = namespace.split(".");
 // const dbName = process.env.DB_NAME!;
 // const collectionName = process.env.COLL_NAME!;
@@ -50,7 +50,7 @@ export function vectorStore(): MongoDBAtlasVectorSearch {
 export function searchArgs(): MongoDBAtlasVectorSearchLibArgs {
     const searchArgs: MongoDBAtlasVectorSearchLibArgs = {
         collection,
-        indexName: "vector_index",
+        indexName: "share-onIndex",
         textKey: "text",
         embeddingKey: "text_embedding",
     }
