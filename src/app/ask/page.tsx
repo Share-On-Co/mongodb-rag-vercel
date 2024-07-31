@@ -1,80 +1,120 @@
 'use client';
 
-import { useChat } from 'ai/react';
-import { useState } from 'react';
+import { Message as MessageProps, useChat } from "ai/react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 import NavBar from '../component/navbar';
+import Form from '@/components/form';
+import { INITIAL_QUESTIONS } from '@/utils/const';
+import cx from '@/utils/cx';
+import Message from "@/components/message";
+import { on } from "events";
+import MessageLoading from "@/components/message-loading";
 
 
 export default function Home() {
   const [waitingForAI, setWaitingForAI] = useState<Boolean>(false);
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    onResponse: () => {
+      setStreaming(false);
+    },
+  });
+  const [streaming, setStreaming] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const onClickQuestion = (value: string) => {
+    // setInput(value);
+    setTimeout(() => {
+      formRef.current?.dispatchEvent(
+        new Event("submit", {
+          cancelable: true,
+          bubbles: true,
+        }),
+      );
+    }, 1);
+  };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView();
+    }
+  }, [messages]);
+
+  const onSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      handleSubmit(e);
+      setStreaming(true);
+    },
+    [handleSubmit],
+  );
 
   return (
-    <div>
-      <NavBar />
-      <div
-        style={{height: '70vh', flexDirection: "column-reverse", display: "flex" }}
+    <main className="relative max-w-screen-md p-4 md:p-6 mx-auto flex min-h-svh !pb-32 md:!pb-40 overflow-y-auto ">
+      {/* <NavBar /> */}
+      <div className="w-full">
+
+        {messages.map((message: MessageProps) => {
+          return <Message key={message.id} {...message} />;
+        })}
         
-      >
-        <>
-          {waitingForAI &&
-            (
-              <div className="loading">
-                <img src='/1484.gif'></img>
-              </div>
-            )}
-        </>
+        {/* loading */}
+        {streaming && <MessageLoading />}
+
+
+
         <>
           {messages.length == 0 &&
             (
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                <img style={{ width: "25%", marginBottom: "2%" }} src='/MongoDB_White.svg' />
-                <span style={{ marginBottom: '2%', fontSize: '40px', justifySelf: 'center' }}>+</span>
-                <img style={{ width: "8%", marginBottom: "2%" }} src='/openAI.svg' />
-              </div>
+              <div className="mt-4 md:mt-6 grid md:grid-cols-2 gap-2 md:gap-4">
+              {INITIAL_QUESTIONS.map((message) => {
+                return (
+                  <button
+                    key={message.content}
+                    type="button"
+                    className="cursor-pointer select-none text-left bg-white font-normal
+                    border border-gray-200 rounded-xl p-3 md:px-4 md:py-3
+                    hover:bg-zinc-50 hover:border-zinc-400"
+                    onClick={() => onClickQuestion(message.content)}
+                  >
+                    {message.content}
+                  </button>
+                );
+              })}
+            </div>
             )
           }
         </>
-        <div className="pr-4 messages">
-          {messages.map(m => (
-            <div key={m.id} className="flex gap-3 my-4 text-gray-600 text-sm flex-1">
-              <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8" 
-                    style={{ margin: '30px', marginTop: '0px' }}>
-                <div className="rounded-full bg-gray-100 border p-1">
-                  {m.role === 'user' ? (
-                    <img src="/user.png" />
-                  ) : (
-                    <img src="/bot.png" />
-                  )}
-                </div>
-              </span>
-              <p className="leading-relaxed" style={{ color: 'aliceblue' }}>
-                <span className="block font-bold">{m.role}</span>
-                {m.content}
-              </p>
-            </div>
-          ))}
 
-        </div>
+        <div
+        className={cx(
+          "fixed z-10 bottom-0 inset-x-0",
+          "flex justify-center items-center",
+          "bg-white",
+        )}
+      >
+        <span
+          className="absolute bottom-full h-10 inset-x-0 from-white/0
+         bg-gradient-to-b to-white pointer-events-none"
+        />
 
-        <div className="flex items-center pt-0 chat-window">
-          <form className="flex items-center justify-center w-full space-x-2" onSubmit={handleSubmit}>
-            <input
-              value={input}
-              onChange={handleInputChange}
-              className="flex h-10 w-full rounded-md border border-[#e5e7eb] px-3 py-2 text-sm placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-[#030712] focus-visible:ring-offset-2"
-              placeholder="Ask what you have in mind"
-            />
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-black hover:bg-[#111827E6] h-10 px-4 py-2"
-            >
-              Send
-            </button>
-          </form>
+        <div className="w-full max-w-screen-md rounded-xl px-4 md:px-5 py-6">
+          <Form
+            ref={formRef}
+            onSubmit={onSubmit}
+            inputProps={{
+              disabled: streaming,
+              value: input,
+              onChange: handleInputChange,
+            }}
+            buttonProps={{
+              disabled: streaming,
+            }}
+          />
+
         </div>
       </div>
-    </div>
-  );
+      </div>
+    </main>
+);
 }

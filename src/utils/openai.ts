@@ -2,12 +2,13 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 import { MongoDBAtlasVectorSearch, MongoDBAtlasVectorSearchLibArgs } from '@langchain/community/vectorstores/mongodb_atlas';
 import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
+import { connect } from 'http2';
 dotenv.config();
 
 let embeddingsInstance: OpenAIEmbeddings | null = null;
 
 const client = new MongoClient(process.env.MONGODB_URI!);
-const namespace = "share-on.test";
+const namespace = "chatter.training_data";
 const [dbName, collectionName] = namespace.split(".");
 // const dbName = process.env.DB_NAME!;
 // const collectionName = process.env.COLL_NAME!;
@@ -18,6 +19,7 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
         // Ensure embeddingsInstance is initialized only once for efficiency
         if (!embeddingsInstance) {
             embeddingsInstance = new OpenAIEmbeddings();
+            console.log(embeddingsInstance);
         }
 
         return embeddingsInstance;
@@ -50,7 +52,7 @@ export function vectorStore(): MongoDBAtlasVectorSearch {
 export function searchArgs(): MongoDBAtlasVectorSearchLibArgs {
     const searchArgs: MongoDBAtlasVectorSearchLibArgs = {
         collection,
-        indexName: "share-onIndex",
+        indexName: "vector_index",
         textKey: "text",
         embeddingKey: "text_embedding",
     }
