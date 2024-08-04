@@ -7,13 +7,11 @@ import Form from '@/components/form';
 import { INITIAL_QUESTIONS } from '@/utils/const';
 import cx from '@/utils/cx';
 import Message from "@/components/message";
-import { on } from "events";
 import MessageLoading from "@/components/message-loading";
 
 
 export default function Home() {
-  const [waitingForAI, setWaitingForAI] = useState<Boolean>(false);
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
     onResponse: () => {
       setStreaming(false);
     },
@@ -23,7 +21,7 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const onClickQuestion = (value: string) => {
-    // setInput(value);
+    setInput(value);
     setTimeout(() => {
       formRef.current?.dispatchEvent(
         new Event("submit", {

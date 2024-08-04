@@ -1,11 +1,15 @@
+
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
-import pdf from "pdf-parse";
 
 import { getEmbeddingsTransformer, searchArgs } from '@/utils/openai';
 import { MongoDBAtlasVectorSearch } from '@langchain/community/vectorstores/mongodb_atlas';
 import { CharacterTextSplitter } from 'langchain/text_splitter';
+import { LlamaParseReader } from "llamaindex/readers/LlamaParseReader";
 
+import 'dotenv/config';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,40 +19,43 @@ export async function POST(req: NextRequest) {
     let parsedText = '';
 
     if (uploadedFiles && uploadedFiles.length > 0) {
-      // Parse the data from uploaded file 
       const uploadedFile = uploadedFiles[1];
       console.log('Uploaded file:', uploadedFile);
 
       if (uploadedFile instanceof File) {
         fileName = uploadedFile.name.toLowerCase();
 
-        const tempFilePath = `/tmp/${fileName}.pdf`;
+        const tempFilePath = `/tmp/${fileName}`;
         const fileBuffer = Buffer.from(await uploadedFile.arrayBuffer());
 
         await fs.writeFile(tempFilePath, fileBuffer);
-        let dataBuffer = fs.readFile(tempFilePath);
 
-        await pdf(await dataBuffer).then(async function (data: { text: any; }) {
-          console.log(data.text);
-          // Collect the parsed data from the PDF file
-          parsedText = data.text;
+        // Use LlamaParseReader to parse the PDF file
+        const reader = new LlamaParseReader({ resultType: "text" });
+        const documents = await reader.loadData(tempFilePath);
 
-          // Spread data into chunks 
-          const chunks = await new CharacterTextSplitter({
-            separator: "\n",
-            chunkSize: 1000,
-            chunkOverlap: 100
-          }).splitText(parsedText)
-          console.log(chunks.length)
+        // Extract the text from the parsed documents
+        parsedText = documents.map(doc => doc.text).join('\n');
+        console.log(parsedText);
 
-          // Convert chunks to Vectors and store into MongoDB
-          await MongoDBAtlasVectorSearch.fromTexts(
-            chunks, [],
-            getEmbeddingsTransformer(),
-            searchArgs()
-          )});
+        // Split text into chunks
+        const chunks = await new CharacterTextSplitter({
+          separator: "\n",
+          chunkSize: 1000,
+          chunkOverlap: 100,
+        }).splitText(parsedText);
+        console.log(' chunks:', chunks);
+
+        console.log(chunks.length);
+
+        // Store chunks into MongoDB using VectorStore
+        await MongoDBAtlasVectorSearch.fromTexts(
+          chunks, [],
+          getEmbeddingsTransformer(),
+          searchArgs()
+        );
+
         return NextResponse.json({ message: "Uploaded to MongoDB" }, { status: 200 });
-
       } else {
         console.log('Uploaded file is not in the expected format.');
         return NextResponse.json({ message: 'Uploaded file is not in the expected format' }, { status: 500 });
@@ -56,15 +63,9 @@ export async function POST(req: NextRequest) {
     } else {
       console.log('No files found.');
       return NextResponse.json({ message: 'No files found' }, { status: 500 });
-
     }
-
   } catch (error) {
     console.error('Error processing request:', error);
-    // Handle the error accordingly, for example, return an error response.
     return new NextResponse("An error occurred during processing.", { status: 500 });
   }
-
 }
-
-
