@@ -12,7 +12,6 @@ const namespace = "chatter.training_data";
 const [dbName, collectionName] = namespace.split(".");
 // const dbName = process.env.DB_NAME!;
 // const collectionName = process.env.COLL_NAME!;
-const collection = client.db(dbName).collection(collectionName);
 
 export function getEmbeddingsTransformer(): OpenAIEmbeddings {
     try {
@@ -41,15 +40,16 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
     }
 }
 
-export function vectorStore(): MongoDBAtlasVectorSearch {
+export function vectorStore(collectionName: string, vectorName: string): MongoDBAtlasVectorSearch {
     const vectorStore: MongoDBAtlasVectorSearch = new MongoDBAtlasVectorSearch(
         new OpenAIEmbeddings(),
-        searchArgs()
+        searchArgs(collectionName, vectorName)
     );
     return vectorStore
 }
 
-export function searchArgs(): MongoDBAtlasVectorSearchLibArgs {
+export function searchArgs(collectionName: string, vectorName: string): MongoDBAtlasVectorSearchLibArgs {
+    const collection = client.db(dbName).collection(collectionName);
     const searchArgs: MongoDBAtlasVectorSearchLibArgs = {
         collection,
         indexName: "vector_index",

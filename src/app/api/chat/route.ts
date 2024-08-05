@@ -1,13 +1,9 @@
 import { StreamingTextResponse, LangChainStream, Message } from 'ai';
 import { ChatOpenAI } from '@langchain/openai';
-
-import { ConversationalRetrievalQAChain, LLMChain } from 'langchain/chains';
 import { vectorStore } from '@/utils/openai';
 import { NextResponse } from 'next/server';
-import { BufferMemory, ChatMessageHistory } from "langchain/memory";
-import { PromptTemplate } from '@langchain/core/prompts';
 import storeQuery from '@/utils/storeQuery';
-  import { BaseMessage, HumanMessage } from "@langchain/core/messages";
+  import { HumanMessage } from "@langchain/core/messages";
   import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
   import { createRetrievalChain } from "langchain/chains/retrieval";
   
@@ -16,7 +12,7 @@ import {
     MessagesPlaceholder,
   } from "@langchain/core/prompts";
   import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
-import { BaseChatMessageHistory } from '@langchain/core/chat_history';
+import { EnsembleRetriever } from "langchain/retrievers/ensemble";
 
 
 export async function POST(req: Request) {
@@ -37,11 +33,20 @@ export async function POST(req: Request) {
             callbacks: [handlers],
         });
 
-        const retriever = vectorStore().asRetriever({ 
+        const retriever1 = vectorStore("training_data", "vector_index").asRetriever({ 
             searchType: "mmr", 
             searchKwargs: { fetchK: 10, lambda: 0.25 } 
         });
 
+        const retriever2 = vectorStore("reddit", "reddit_index").asRetriever({
+            searchType: "mmr",
+            searchKwargs: { fetchK: 10, lambda: 0.25 },
+        });
+
+        const retriever = new EnsembleRetriever({
+            retrievers: [retriever1, retriever2],
+            weights: [0.5, 0.5],
+          });
 
           // Contextualize question
         const contextualizeQSystemPrompt = `

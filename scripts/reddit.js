@@ -1,4 +1,5 @@
 import Snoowrap from 'snoowrap';
+import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -22,6 +23,9 @@ class Post {
     getCommentsID() {
         return this.commentsID;
     }
+    getTopComment() {
+        return this.topComment;
+    }
 }
 
 async function reddit() {
@@ -42,12 +46,26 @@ async function reddit() {
 
     });
 
-    await reddit.getSubreddit('mentalhealth').getHot().map(post => posts.push(new Post(post.title, post.selftext, post.id)))
-
+    await reddit.getSubreddit('mentalhealth').getTop({time: 'month'}).map(post => posts.push(new Post(post.title, post.selftext, post.id)))
+    const client = new MongoClient(process.env.MONGODB_URI);
+    const namespace = "share-on.reddit";
+    const [dbName, collectionName] = namespace.split(".");
+    const collection = client.db(dbName).collection(collectionName);
+    posts.shift();
     for (let post of posts) {
-        const comment = await reddit.getSubmission(post.getCommentsID()).comments[0]
-        post.topComment = comment;
+        try {
+            const comment = await (await reddit.getSubmission(post.getCommentsID()).fetch()).comments[0].body
+            post.topComment = comment
+        }
+        catch (e) {
+            
+        }
+        console.log(post)
+        collection.insertOne({ query: `Question: ${post.getTitle() + ' ' +  post.getDescription()} \n + Answer: ${post.getTopComment()}` });
+
     }
-    console.log(posts)
+
+      
+
 }
 reddit();
