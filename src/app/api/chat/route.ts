@@ -28,6 +28,7 @@ export async function POST(req: Request) {
         const messages: Message[] = [ ...userMessages];
 
         const llm = new ChatOpenAI({
+            model: "gpt-4o",
             temperature: 0.8,
             streaming: true,
             callbacks: [handlers],
