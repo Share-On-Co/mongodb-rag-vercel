@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
         await MongoDBAtlasVectorSearch.fromTexts(
           chunks, [],
           getEmbeddingsTransformer(),
-          searchArgs()
+          searchArgs("training_data", "vector_index")
         );
 
         return NextResponse.json({ message: "Uploaded to MongoDB" }, { status: 200 });
