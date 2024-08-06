@@ -13,6 +13,7 @@ Before you begin, make sure you have the following ready:
 
 
 
+
 ## Steps to Deploy 
 Follow the below-mentioned steps to deploy the app on Vercel.
 
