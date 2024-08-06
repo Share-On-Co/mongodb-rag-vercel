@@ -2,7 +2,6 @@
 
 import { Message as MessageProps, useChat } from "ai/react";
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NavBar from '../component/navbar';
 import Form from '@/components/form';
 import { INITIAL_QUESTIONS } from '@/utils/const';
 import cx from '@/utils/cx';
@@ -10,7 +9,7 @@ import Message from "@/components/message";
 import MessageLoading from "@/components/message-loading";
 
 
-export default function Home() {
+export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
     onResponse: () => {
       setStreaming(false);
@@ -49,7 +48,7 @@ export default function Home() {
 
   return (
     <main className="relative max-w-screen-md p-4 md:p-6 mx-auto flex min-h-svh !pb-32 md:!pb-40 overflow-y-auto ">
-      {/* <NavBar /> */}
+
       <div className="w-full">
 
         {messages.map((message: MessageProps) => {

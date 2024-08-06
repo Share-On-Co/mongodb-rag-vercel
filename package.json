@@ -10,10 +10,13 @@
     "script": "node ./scripts/reddit.js"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@langchain/community": "^0.2.23",
     "@langchain/core": "^0.2.20",
     "@langchain/mongodb": "^0.0.5",
     "@langchain/openai": "^0.2.5",
+    "@next/font": "^14.2.5",
     "@tabler/icons-react": "^3.11.0",
     "ai": "^2.2.36",
     "axios": "^1.6.7",

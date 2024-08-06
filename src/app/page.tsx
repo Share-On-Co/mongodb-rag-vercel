@@ -1,34 +1,117 @@
-import React from 'react'
-import NavBar from './component/navbar'
+'use client';
+
+import { Message as MessageProps, useChat } from "ai/react";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Form from '@/components/form';
+import { INITIAL_QUESTIONS } from '@/utils/const';
+import cx from '@/utils/cx';
+import Message from "@/components/message";
+import MessageLoading from "@/components/message-loading";
 
 
-const Home = () => {
+export default function Home() {
+  const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+    onResponse: () => {
+      setStreaming(false);
+    },
+  });
+  const [streaming, setStreaming] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const onClickQuestion = (value: string) => {
+    setInput(value);
+    setTimeout(() => {
+      formRef.current?.dispatchEvent(
+        new Event("submit", {
+          cancelable: true,
+          bubbles: true,
+        }),
+      );
+    }, 1);
+  };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView();
+    }
+  }, [messages]);
+
+  const onSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      handleSubmit(e);
+      setStreaming(true);
+    },
+    [handleSubmit],
+  );
+
   return (
-    <div>
-      <NavBar />
-      <div className='overview-text'>
+    <main className="relative max-w-screen-md p-4 md:p-6 mx-auto flex min-h-svh !pb-32 md:!pb-40 overflow-y-auto ">
 
-        <h1 style={{ fontWeight: 'bold', fontSize: '2em' }}>RAG QnA Chatbot</h1>
-        <br />
+      <div className="w-full">
+
+        {messages.map((message: MessageProps) => {
+          return <Message key={message.id} {...message} />;
+        })}
         
-        <p>With this RAG (Retrieval-Augmented Generation) application, you can quickly deploy a chatbot that is enhanced by your own data. By simply uploading any PDF file(s) of your choosing, you will be creating your own custom Questions and Answers (QnA) chatbot.</p>
-        <br />
+        {/* loading */}
+        {streaming && <MessageLoading />}
 
-        <h2 style={{ fontStyle: 'italic' }}>Getting Started</h2>
-        <ul>
-          <li>Navigate to the &ldquo;Train&rdquo; tab above.</li>
-          <li>Here you can upload any number of PDF files you wish to ask the chatbot about, or that you wish the chatbot would consider when providing an answer.</li>
-          <li>After uploading your files, navigate to &ldquo;QnA&rdquo; tab.</li>
-          <li>In the prompt, you can now ask questions about the uploaded PDF files in natural language, and receive a response.</li>
-        </ul>
 
-        <br />
 
-        <p>This application leverages MongoDB&apos;s robust vector store capabilities. Each uploaded PDF is embedded in a vectorized format into your MongoDB Atlas cluster. The vector store efficiently organizes and indexes data, streamlining the process of generating responses and insights from the RAG model.</p>
+        <>
+          {messages.length == 0 &&
+            (
+              <div className="mt-4 md:mt-6 grid md:grid-cols-2 gap-2 md:gap-4">
+              {INITIAL_QUESTIONS.map((message) => {
+                return (
+                  <button
+                    key={message.content}
+                    type="button"
+                    className="cursor-pointer select-none text-left bg-white font-normal
+                    border border-gray-200 rounded-xl p-3 md:px-4 md:py-3
+                    hover:bg-zinc-50 hover:border-zinc-400"
+                    onClick={() => onClickQuestion(message.content)}
+                  >
+                    {message.content}
+                  </button>
+                );
+              })}
+            </div>
+            )
+          }
+        </>
+
+        <div
+        className={cx(
+          "fixed z-10 bottom-0 inset-x-0",
+          "flex justify-center items-center",
+          "bg-white",
+        )}
+      >
+        <span
+          className="absolute bottom-full h-10 inset-x-0 from-white/0
+         bg-gradient-to-b to-white pointer-events-none"
+        />
+
+        <div className="w-full max-w-screen-md rounded-xl px-4 md:px-5 py-6">
+          <Form
+            ref={formRef}
+            onSubmit={onSubmit}
+            inputProps={{
+              disabled: streaming,
+              value: input,
+              onChange: handleInputChange,
+            }}
+            buttonProps={{
+              disabled: streaming,
+            }}
+          />
+
+        </div>
       </div>
-    </div>
-
-  )
+      </div>
+    </main>
+);
 }
-
-export default Home
