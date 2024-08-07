@@ -1,7 +1,12 @@
+"use client";
+
 import Link from 'next/link'
 import '../auth.css'
 import { Open_Sans } from 'next/font/google'
-
+import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faKey } from '@fortawesome/free-solid-svg-icons';
+import {handleRegister} from '@/utils/user';
     //👇 Configure our font object
     const openSans = Open_Sans({
         subsets: ['latin'],
@@ -9,6 +14,12 @@ import { Open_Sans } from 'next/font/google'
     })
 
 export default function Register() {
+    
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+
     return (
         <html lang="pt-br">
         
@@ -32,7 +43,7 @@ export default function Register() {
                     <img src="login-mobile.svg"/>
                 </div>
                 <div className="login-container">
-                    <form action="index.html">
+                    <div className='form'>
                         <h2>Register</h2>
                         <p>Log-in with:</p>
                         <div className="social">
@@ -45,38 +56,38 @@ export default function Register() {
                         </div>
                         <div className="input-div one">
                             <div className="i">
-                                <i className="fas fa-user"></i>
+                                <FontAwesomeIcon icon={faUser} />
                             </div>
                             <div>
-                                <h5>Username</h5>
-                                <input className="input" type="text"/>
-                            </div>
-                        </div>
-                        <div className="input-div two">
-                            <div className="i">
-                                <i className="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <h5>E-mail</h5>
-                                <input className="input" type="email"/>
+                                <input className="input" type="text"
+                                    value={username}
+                                    onChange={e => setUsername(e.target.value)}
+                                    placeholder='Username'
+                                />
                             </div>
                         </div>
                         <div className="input-div one">
                             <div className="i">
-                                <i className="fas fa-key"></i>
+                                <FontAwesomeIcon icon={faKey} />
                             </div>
                             <div>
-                                <h5>Password</h5>
-                                <input className="input" type="password"/>
+                                <input className="input" type="password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    placeholder='Password'
+                                />
                             </div>
                         </div>
                         <div className="input-div two">
                             <div className="i">
-                                <i className="fas fa-key"></i>
+                                <FontAwesomeIcon icon={faKey} />
                             </div>
                             <div>
-                                <h5>Confirm Password</h5>
-                                <input className="input" type="password"/>
+                                <input className="input" type="password"
+                                    value={confirmPassword}
+                                    onChange={e => setConfirmPassword(e.target.value)}
+                                    placeholder='Confirm password'
+                                />
                             </div>
                         </div>
                         <div className="terms">
@@ -84,7 +95,7 @@ export default function Register() {
                             <label>I have read and agree with </label><a id="action-modal">terms of use.</a>
                         </div>
                         <div className="btn-container">
-                            <Link href="sucess.html" className="btn-action">Register</Link>
+                            <button className="btn-action" onClick={() => handleRegister(username, password)}>Register</button>
                         </div>
                         <div className="account">
                             <p>Already have an account?</p>
@@ -140,7 +151,7 @@ export default function Register() {
                                     fringilla. Non quam lacus suspendisse faucibus interdum.</p>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         

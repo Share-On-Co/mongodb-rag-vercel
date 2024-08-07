@@ -24,7 +24,7 @@
 
   button:focus,
   input:focus {
-    @apply outline-0 ring-2 ring-offset-1 ring-emerald-500 caret-emerald-500;
+    /* @apply outline-0 ring-2 ring-offset-1 ring-emerald-500 caret-emerald-500; */
   }
 
   label,

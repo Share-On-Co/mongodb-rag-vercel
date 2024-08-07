@@ -22,5 +22,6 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "scripts/reddit.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "moduleResolution": "nodenext",
 }

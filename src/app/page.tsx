@@ -8,7 +8,6 @@ import cx from '@/utils/cx';
 import Message from "@/components/message";
 import MessageLoading from "@/components/message-loading";
 
-
 export default function Home() {
   const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
     onResponse: () => {
@@ -115,3 +114,6 @@ export default function Home() {
     </main>
 );
 }
+
+
+

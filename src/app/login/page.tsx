@@ -1,6 +1,13 @@
+"use client";
+
 import Link from 'next/link';
 import '../auth.css'
 import { Open_Sans } from 'next/font/google'
+import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faKey } from '@fortawesome/free-solid-svg-icons';
+import { handleLogin } from '@/utils/user';
+import { useRouter } from 'next/navigation';
 
     //👇 Configure our font object
     const openSans = Open_Sans({
@@ -9,6 +16,19 @@ import { Open_Sans } from 'next/font/google'
     })
 
 export default function Login() {
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const router = useRouter();
+
+    function login(username, password) {
+        handleLogin(username, password)
+            .then(user => {
+                if (user) {
+                    router.push('/home');
+                }
+            });
+    }
     return (
         <html lang="pt-br">
 
@@ -31,28 +51,34 @@ export default function Login() {
                     <img src="authentication.svg"/>
                 </div>
                 <div className="login-container">
-                    <form action="login.html">
+                    <div className='form'>
                         <h2>Log-in</h2>
                         <p>Welcome back!</p>
                         <div className="input-div one">
                             <div className="i">
-                                <i className="fas fa-user"></i>
+                                <FontAwesomeIcon icon={faUser} />
                             </div>
                             <div>
-                                <h5>Username</h5>
-                                <input className="input" type="text"/>
+                                <input className="input" type="text"
+                                    value={username}
+                                    onChange={e => setUsername(e.target.value)}
+                                    placeholder='Username'
+                                />
                             </div>
                         </div>
                         <div className="input-div two">
                             <div className="i">
-                                <i className="fas fa-key"></i>
+                                <FontAwesomeIcon icon={faKey} />
                             </div>
                             <div>
-                                <h5>Password</h5>
-                                <input className="input" type="password"/>
+                                <input className="input" type="password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    placeholder='Password'
+                                />
                             </div>
                         </div>
-                        <input type="submit" className="btn" value="Log-in"/>
+                        <button type="submit" className="btn" onClick={() => login(username, password)}>Log-in</button>
                         <Link className="forgot" href="/forgotPass">Forgot your password?</Link>
                         <div className="others">
                             <hr/>
@@ -71,7 +97,7 @@ export default function Login() {
                             <p>Don&apos;t have an account yet?</p>
                             <Link href="/register">Register</Link>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
