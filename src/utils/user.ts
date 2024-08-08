@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { cookies } from 'next/headers'
 import { useRouter } from 'next/navigation';
 
-export async function handleRegister(username, password) {
+export async function handleRegister(username: string, password: string) {
     //👇 Add your logic here
     const prisma = new PrismaClient()
     const user = await prisma.user.create({
@@ -19,7 +19,7 @@ export async function handleRegister(username, password) {
     return user
 }
 
-export async function handleLogin(username, password) {
+export async function handleLogin(username: string, password: string) {
     //👇 Add your logic here
     const prisma = new PrismaClient()
     const user = await prisma.user.findUnique({
