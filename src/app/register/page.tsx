@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faKey } from '@fortawesome/free-solid-svg-icons';
 import {handleRegister} from '@/utils/user';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
     //👇 Configure our font object
     const openSans = Open_Sans({
         subsets: ['latin'],
