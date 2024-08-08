@@ -21,7 +21,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const router = useRouter();
 
-    function login(username, password) {
+    function login(username: string, password: string) {
         handleLogin(username, password)
             .then(user => {
                 if (user) {
@@ -36,12 +36,6 @@ export default function Login() {
             <meta charSet="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
             <title>Log-in with</title>
-            
-            {/* <!-- Font Awesome kit script --> */}
-            {/* <script src="https://kit.fontawesome.com/a81368914c.js"></script> */}
-
-            {/* <!-- Favicon --> */}
-            <link rel="icon" href="html-5.png"/>
         </head>
 
         <body className={openSans.className}>

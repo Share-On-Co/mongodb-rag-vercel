@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faKey } from '@fortawesome/free-solid-svg-icons';
 import {handleRegister} from '@/utils/user';
+import { useRouter } from 'next/router';
     //👇 Configure our font object
     const openSans = Open_Sans({
         subsets: ['latin'],
@@ -18,6 +19,16 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const router = useRouter();
+    
+    function register(username: string, password: string) {
+        handleRegister(username, password)
+            .then(user => {
+                if (user) {
+                    router.push('/status/success');
+                }
+            });
+    }
 
 
     return (
@@ -27,13 +38,6 @@ export default function Register() {
             <meta charSet="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
             <title>Register</title>
-        
-            {/* <!-- Font Awesome kit script --> */}
-            {/* <script src="https://kit.fontawesome.com/a81368914c.js"></script> */}
-
-        
-            {/* <!-- Favicon --> */}
-            <link rel="icon" href="html-5.png"/>
         </head>
         
         <body className={openSans.className}>
@@ -95,7 +99,7 @@ export default function Register() {
                             <label>I have read and agree with </label><a id="action-modal">terms of use.</a>
                         </div>
                         <div className="btn-container">
-                            <button className="btn-action" onClick={() => handleRegister(username, password)}>Register</button>
+                            <button className="btn-action" onClick={() => register(username, password)}>Register</button>
                         </div>
                         <div className="account">
                             <p>Already have an account?</p>

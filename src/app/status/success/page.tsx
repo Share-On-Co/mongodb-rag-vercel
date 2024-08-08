@@ -16,8 +16,6 @@ export default function Register() {
             <meta charSet="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
             <title>Registration Confirmation</title>
-
-            <link rel="icon" href="html-5.png"/>
         </head>
 
         <body className={openSans.className}>

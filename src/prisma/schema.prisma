@@ -15,9 +15,12 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   name      String
+  profilePic String?
+  bio       String?
   username     String   @unique
   password     String
   age      Int?
+  gender   String?
   keywords  String[]
   createdAt DateTime @default(now())
 }
