@@ -6,8 +6,8 @@ import cx from "@/utils/cx";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chatter",
-  description: "RAG using MongoDB Atlas & OpenAI"
+  title: "Share-On",
+  description: "Your mental health companion",
 };
 
 export default function RootLayout({
