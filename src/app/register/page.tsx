@@ -25,7 +25,7 @@ export default function Register() {
         handleRegister(username, password)
             .then(user => {
                 if (user) {
-                    router.push('/status/success');
+                    router.push('/');
                 }
             });
     }

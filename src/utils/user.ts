@@ -16,6 +16,7 @@ export async function handleRegister(username: string, password: string) {
             keywords: []
         }
     })
+    cookies().set('currentUser', `${user.id}`)
     return user
 }
 
