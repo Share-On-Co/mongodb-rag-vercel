@@ -21,6 +21,7 @@
     "@next/font": "^14.2.5",
     "@prisma/client": "^5.18.0",
     "@tabler/icons-react": "^3.11.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "@vercel/postgres": "^0.5.1",
     "ai": "^2.2.36",
     "axios": "^1.6.7",
