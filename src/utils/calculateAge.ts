@@ -1,4 +1,4 @@
-export default function calculateAge(dob) {
+export default function calculateAge(dob: string | number | Date) {
   const today = new Date();
   const birthDate = new Date(dob);
   let age = today.getFullYear() - birthDate.getFullYear();
