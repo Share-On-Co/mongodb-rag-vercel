@@ -25,9 +25,9 @@ export default function FinishProfile() {
         handlefinishProfile(firstName, lastName, dob, gender, bio, interest, profilePicture)
     }
     
-    async function handleFileChange(e) {
+    async function handleFileChange(files) {
             
-        let image = e.target.files[0];
+        let image = files[0];
         let reader = new FileReader();
         reader.onload = () => setProfilePicture(reader.result as string);
         reader.readAsDataURL(image);        
@@ -138,7 +138,7 @@ export default function FinishProfile() {
                         <div className="stage3-content slide-in">
                             <div className="upload-image-section">
                                 <h3>Upload Profile Picture</h3>
-                                <input type="file" id="profile-picture" name="profile-picture" accept="image/*" onChange={(e) => handleFileChange(e)} />
+                                <input type="file" id="profile-picture" name="profile-picture" accept="image/*" onChange={(e) => handleFileChange(e.target.files)} />
                                 <label htmlFor="profile-picture">Choose a file</label>
                                 <div className="image-preview">
                                     <Image src={profilePicture} alt="Profile Picture" id="profile-picture-preview" width={50} height={50}/>
