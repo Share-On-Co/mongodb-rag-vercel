@@ -3,44 +3,35 @@
 import { useEffect, useState } from 'react';
 import '../finishProfile.css';
 import { useScript } from "@uidotdev/usehooks";
+import Image from 'next/image';
+import { handlefinishProfile } from '@/utils/user';
 
 export default function FinishProfile() {
     useScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
 
     const [currentStage, setCurrentStage] = useState(1);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [dob, setDob] = useState('');
+    const [gender, setGender] = useState('');
+    const [bio, setBio] = useState('');
+    const [interest, setInterest] = useState('');
+    const [profilePicture, setProfilePicture] = useState('');
 
-    useEffect(() => {
-        const profilePictureInput = document.getElementById('profile-picture') as HTMLInputElement;
-        const profilePicturePreview = document.getElementById('profile-picture-preview') as HTMLImageElement;
-    
-        const handleFileChange = () => {
-            console.log('file changed');
-            if (profilePictureInput.files && profilePictureInput.files.length > 0) {
-                const file = profilePictureInput.files[0];
-                const reader = new FileReader();
-    
-                reader.onload = (event) => {
-                    if (event.target) {
-                        profilePicturePreview.src = event.target.result as string;
-                    }
-                };
-    
-                reader.readAsDataURL(file);
-            }
-        };
-    
-        if (profilePictureInput) {
-            profilePictureInput.addEventListener('change', handleFileChange);
-        }
-    
-        return () => {
-            if (profilePictureInput) {
-                profilePictureInput.removeEventListener('change', handleFileChange);
-            }
-        };
-    }, []);
-    
 
+
+    function handleSubmit() {
+        //👇 Add your logic here
+        handlefinishProfile(firstName, lastName, dob, gender, bio, interest, profilePicture)
+    }
+    
+    async function handleFileChange(e) {
+            
+        let image = e.target.files[0];
+        let reader = new FileReader();
+        reader.onload = () => setProfilePicture(reader.result as string);
+        reader.readAsDataURL(image);        
+    };
     const stage1to2 = () => {
         setCurrentStage(2);
     };
@@ -90,27 +81,27 @@ export default function FinishProfile() {
                             <div className="button-container">
                                 <div className="text-fields fname">
                                     <label htmlFor="fname"><i className='bx bx-user'></i></label>
-                                    <input type="text" name="fname" id="fname" placeholder="Enter your first name" />
+                                    <input type="text" name="fname" id="fname" placeholder="Enter your first name" onChange={(e) => setFirstName(e.target.value)}/>
                                 </div>
                                 <div className="text-fields lname">
                                     <label htmlFor="lname"><i className='bx bx-user'></i></label>
-                                    <input type="text" name="lname" id="lname" placeholder="Enter your last name" />
+                                    <input type="text" name="lname" id="lname" placeholder="Enter your last name" onChange={(e) => setLastName(e.target.value)} />
                                 </div>
                             </div>
                             <div className="button-container">
                                 <div className="text-fields dob">
-                                    <input type="date" name="dob" id="dob" />
+                                    <input type="date" name="dob" id="dob" onChange={(e) => setDob(e.target.value)} />
                                 </div>
                                 <div className="gender-selection">
                                     <p className="field-heading">Gender:</p>
                                     <label htmlFor="male">
-                                        <input type="radio" name="gender" id="male" />Male
+                                        <input type="radio" name="gender" id="male" onClick={() => setGender('male')}/>Male
                                     </label>
                                     <label htmlFor="female">
-                                        <input type="radio" name="gender" id="female" />Female
+                                        <input type="radio" name="gender" id="female" onClick={() => setGender('female')}/>Female
                                     </label>
                                     <label htmlFor="other">
-                                        <input type="radio" name="gender" id="other" />Other
+                                        <input type="radio" name="gender" id="other" onClick={() => setGender('other')}/>Other
                                     </label>
                                 </div>
                             </div>
@@ -123,13 +114,13 @@ export default function FinishProfile() {
                         <div className="stage2-content slide-in">
                             <div className="button-container">
                                 <div className="text-fields phone">
-                                    <input type="text" name="phone" id="phone" placeholder="Introduce yourself!" />
+                                    <input type="text" name="phone" id="phone" placeholder="Introduce yourself!" onChange={(e) => setBio(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="button-container">
                                 <div className="text-fields dropdown">
                                     <label htmlFor="dropdown">Find your interests!</label>
-                                    <select name="dropdown" id="dropdown">
+                                    <select name="dropdown" id="dropdown" onChange={(e) => setInterest(e.target.value)}>
                                         <option value="">Select</option>
                                         <option value="option1">Option 1</option>
                                         <option value="option2">Option 2</option>
@@ -147,15 +138,15 @@ export default function FinishProfile() {
                         <div className="stage3-content slide-in">
                             <div className="upload-image-section">
                                 <h3>Upload Profile Picture</h3>
-                                <input type="file" id="profile-picture" name="profile-picture" accept="image/*" />
+                                <input type="file" id="profile-picture" name="profile-picture" accept="image/*" onChange={(e) => handleFileChange(e)} />
                                 <label htmlFor="profile-picture">Choose a file</label>
                                 <div className="image-preview">
-                                    <img src="" alt="Profile Picture" id="profile-picture-preview" />
+                                    <Image src={profilePicture} alt="Profile Picture" id="profile-picture-preview" width={50} height={50}/>
                                 </div>
                             </div>
                             <div className="pagination-btns">
                                 <input type="button" value="Previous" className="previousPage stagebtn3a" onClick={stage3to2} />
-                                <input type="submit" value="Submit" className="nextPage stagebtn3b" />
+                                <input type="submit" value="Submit" className="nextPage stagebtn3b" onClick={handleSubmit} />
                             </div>
                         </div>
                     )}
