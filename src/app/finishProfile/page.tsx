@@ -25,12 +25,13 @@ export default function FinishProfile() {
         handlefinishProfile(firstName, lastName, dob, gender, bio, interest, profilePicture)
     }
     
-    async function handleFileChange(files) {
-            
-        let image = files[0];
-        let reader = new FileReader();
-        reader.onload = () => setProfilePicture(reader.result as string);
-        reader.readAsDataURL(image);        
+    async function handleFileChange(files: any[] | FileList | null) {
+        if (files && files.length > 0) {
+            let image = files[0];
+            let reader = new FileReader();
+            reader.onload = () => setProfilePicture(reader.result as string);
+            reader.readAsDataURL(image);
+        }
     };
     const stage1to2 = () => {
         setCurrentStage(2);
