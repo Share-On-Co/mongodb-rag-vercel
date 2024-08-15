@@ -5,6 +5,7 @@ import '../finishProfile.css';
 import { useScript } from "@uidotdev/usehooks";
 import Image from 'next/image';
 import { handlefinishProfile } from '@/utils/user';
+import Multiselect from 'multiselect-react-dropdown';
 
 export default function FinishProfile() {
     useScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
@@ -15,9 +16,8 @@ export default function FinishProfile() {
     const [dob, setDob] = useState('');
     const [gender, setGender] = useState('');
     const [bio, setBio] = useState('');
-    const [interest, setInterest] = useState('');
+    const [interest, setInterest] = useState<string[]>([]);
     const [profilePicture, setProfilePicture] = useState('');
-
 
 
     function handleSubmit() {
@@ -48,7 +48,15 @@ export default function FinishProfile() {
     const stage3to2 = () => {
         setCurrentStage(2);
     };
-
+    const onSelect = (selectedList: any[], selectedItem: any) => {
+        setInterest(selectedList.map((item) => item.name));
+        console.log(interest);
+    }
+    
+    const onRemove = (selectedList: any[], removedItem: any) => {
+        setInterest(selectedList.map((item) => item.name));
+        console.log(interest);
+    };
     return (
         <div className="container">
             <div className="login-link">
@@ -121,12 +129,22 @@ export default function FinishProfile() {
                             <div className="button-container">
                                 <div className="text-fields dropdown">
                                     <label htmlFor="dropdown">Find your interests!</label>
-                                    <select name="dropdown" id="dropdown" onChange={(e) => setInterest(e.target.value)}>
-                                        <option value="">Select</option>
-                                        <option value="option1">Option 1</option>
-                                        <option value="option2">Option 2</option>
-                                        <option value="option3">Option 3</option>
-                                    </select>
+                                    <Multiselect id='dropdown'
+                                        options={[
+                                            { name: 'Depression', id: 1 },
+                                            { name: 'Bipolar', id: 2 },
+                                            { name: 'Stressed', id: 3 },
+                                            { name: 'School', id: 4 },
+                                            { name: 'Lonely', id: 5 },
+                                            { name: 'Lost', id: 6 },
+                                            { name: 'Heartbroken', id: 7 },
+                                            { name: 'OCD', id: 8 },
+                                            { name: 'PTSD', id: 9 }
+                                          ]} // Options to display in the dropdown
+                                        onSelect={onSelect} // Function will trigger on select event
+                                        onRemove={onRemove} // Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                    />
                                 </div>
                             </div>
                             <div className="pagination-btns">

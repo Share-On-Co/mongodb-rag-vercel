@@ -37,7 +37,7 @@ export async function handleLogin(username: string, password: string) {
     return user
 }
 
-export async function handlefinishProfile(firstName: string, lastName: string, dob: string, gender: string, bio: string, interest: string, profilePicture: string) {
+export async function handlefinishProfile(firstName: string, lastName: string, dob: string, gender: string, bio: string, interest: string[], profilePicture: string) {
     //👇 Add your logic here
     const prisma = new PrismaClient()
     const user = await prisma.user.update({
@@ -49,7 +49,7 @@ export async function handlefinishProfile(firstName: string, lastName: string, d
             age: calculateAge(dob),
             gender: gender,
             bio: bio,
-            keywords: [interest],
+            keywords: interest,
             profilePic: profilePicture
         }
     })
