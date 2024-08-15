@@ -6,6 +6,7 @@ import { useScript } from "@uidotdev/usehooks";
 import Image from 'next/image';
 import { handlefinishProfile } from '@/utils/user';
 import Multiselect from 'multiselect-react-dropdown';
+import { useRouter } from 'next/navigation';
 
 export default function FinishProfile() {
     useScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
@@ -19,10 +20,12 @@ export default function FinishProfile() {
     const [interest, setInterest] = useState<string[]>([]);
     const [profilePicture, setProfilePicture] = useState('');
 
+    const router = useRouter();
 
     function handleSubmit() {
         //👇 Add your logic here
         handlefinishProfile(firstName, lastName, dob, gender, bio, interest, profilePicture)
+        router.push('/');
     }
     
     async function handleFileChange(files: any[] | FileList | null) {
