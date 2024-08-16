@@ -27,7 +27,12 @@ export default async function matchUser() {
     });
 
     let message = await llm.invoke(`Find a user with matching interests. Here is the current user's interests: ${currentUser?.keywords.join(', ')}. Here are the ids of all other users: ${allUsersIds} and their interests: ${allUsersInterests.join(', ')}. Respond with ONLY ONE number which would be the user id of the matched user`);
-    console.log(message["content"]);
-    return message["content"];
+    // Get user's name from id
+    let matchedUser = await prisma.user.findUnique({
+        where: {
+            id: Number(message["content"])
+        }
+    })
+    return matchedUser;
 }
     
