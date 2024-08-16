@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
         const retriever = new EnsembleRetriever({
             retrievers: [retriever1, retriever2],
-            weights: [0.5, 0.5],
+            weights: [0.75, 0.25],
           });
 
           // Contextualize question
