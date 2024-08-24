@@ -23,12 +23,12 @@ export async function GET(req: Request) {
     })
 
     if (user) {
-      return NextResponse.json(user, { status: 200 })
+      return Response.json(user, { status: 200 })
     } else {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+      return Response.json({ message: 'User not found' }, { status: 404 })
     }
   } catch (error) {
-    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 })
+    return Response.json({ message: 'Something went wrong', error }, { status: 500 })
   } finally {
     await prisma.$disconnect()
   }
