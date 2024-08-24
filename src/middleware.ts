@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
 }
  
 export const config = {
-  matcher: ['/((?!api/chat))',
+  matcher: [
     '/login',
     '/register'
   ],
