@@ -49,7 +49,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    let user = matchApi(Number(id))
+    let user = await matchApi(Number(id))
     if (user) {
       return NextResponse.json(user, { status: 200 })
     }
