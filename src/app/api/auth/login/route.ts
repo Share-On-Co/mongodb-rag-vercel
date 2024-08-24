@@ -1,42 +1,34 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 // GET /api/auth/login
 // Required query parameters: username, password
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function GET(req: Request) {
   const prisma = new PrismaClient()
+  
+  const { searchParams } = new URL(req.url)
+  const username = searchParams.get('username')
+  const password = searchParams.get('password')
 
-  // Ensure this is a GET request
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' })
-  }
-
-  const { username, password } = req.query
-
-  // Validate required query parameters
   if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' })
+    return NextResponse.json({ message: 'Username and password are required' }, { status: 400 })
   }
 
   try {
-    // Fetch the user with the provided credentials
     const user = await prisma.user.findUnique({
       where: {
-        username: username as string,
-        password: password as string,
+        username,
+        password,
       },
     })
 
     if (user) {
-      return res.status(200).json(user)
+      return NextResponse.json(user, { status: 200 })
     } else {
-      return res.status(404).json({ message: 'User not found' })
+      return NextResponse.json({ message: 'User not found' }, { status: 404 })
     }
   } catch (error) {
-    return res.status(500).json({ message: 'Something went wrong', error })
+    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 })
   } finally {
     await prisma.$disconnect()
   }

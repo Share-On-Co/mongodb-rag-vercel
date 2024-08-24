@@ -1,48 +1,47 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 // GET /api/auth/register
 // Required query parameters: name, username, password
 // Optional query parameters: profilePic, bio, age, gender, keywords
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function GET(req: Request) {
   const prisma = new PrismaClient()
 
-  // Ensure this is a GET request
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' })
-  }
-
-  const { name, username, password, profilePic, bio, age, gender, keywords } = req.query
+  const { searchParams } = new URL(req.url)
+  const name = searchParams.get('name')
+  const username = searchParams.get('username')
+  const password = searchParams.get('password')
+  const profilePic = searchParams.get('profilePic')
+  const bio = searchParams.get('bio')
+  const age = searchParams.get('age')
+  const gender = searchParams.get('gender')
+  const keywords = searchParams.get('keywords')
 
   // Validate required query parameters
   if (!name || !username || !password) {
-    return res.status(400).json({ message: 'Name, username, and password are required' })
+    return NextResponse.json({ message: 'Name, username, and password are required' }, { status: 400 })
   }
 
   try {
-    // Create a new user with the provided data
     const newUser = await prisma.user.create({
       data: {
-        name: name as string,
-        username: username as string,
-        password: password as string,
-        profilePic: profilePic ? (profilePic as string) : null,
-        bio: bio ? (bio as string) : null,
-        age: age ? parseInt(age as string, 10) : null,
-        gender: gender ? (gender as string) : null,
-        keywords: keywords ? (keywords as string).split(',') : [],
+        name,
+        username,
+        password,
+        profilePic: profilePic || null,
+        bio: bio || null,
+        age: age ? parseInt(age, 10) : null,
+        gender: gender || null,
+        keywords: keywords ? keywords.split(',') : [],
       },
     })
 
-    return res.status(201).json(newUser)
-  } catch (error) {
-    if (error.code === 'P2002') { // Prisma error code for unique constraint violation
-      return res.status(409).json({ message: 'Username already exists' })
+    return NextResponse.json(newUser, { status: 201 })
+  } catch (error: any) {
+    if (error.code === 'P2002') { // Unique constraint violation
+      return NextResponse.json({ message: 'Username already exists' }, { status: 409 })
     }
-    return res.status(500).json({ message: 'Something went wrong', error })
+    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 })
   } finally {
     await prisma.$disconnect()
   }
