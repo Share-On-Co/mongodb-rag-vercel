@@ -14,7 +14,7 @@ datasource db {
  
 model User {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String?
   profilePic String?
   bio       String?
   username     String   @unique
@@ -22,5 +22,27 @@ model User {
   age      Int?
   gender   String?
   keywords  String[]
+  createdAt DateTime @default(now())
+  posts Post[]
+  replies Reply[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  replies Reply[]
+}
+
+model Reply {
+  id        Int      @id @default(autoincrement())
+  content   String
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
 }
