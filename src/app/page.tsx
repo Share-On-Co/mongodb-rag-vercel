@@ -56,7 +56,7 @@ export default function Home() {
   const handleMatch = async () => {
     setShowLoadingMatchButton(true);
     let user = await matchUser();
-    setMatchedUser(user?.name);
+    setMatchedUser(user?.name ?? '');
     setShowMatchAlert(true);
     setShowLoadingMatchButton(false);
   }
